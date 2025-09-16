@@ -8,7 +8,8 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
@@ -26,7 +27,8 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: SSH into EC2 and deploy to Kind
         uses: appleboy/ssh-action@master
@@ -47,8 +49,9 @@ jobs:
             cd ~/wisecow
 
             # Load Docker image into Kind
-            kind load docker-image ${{ secrets.DOCKER_USERNAME }}/wisecow:latest --name kind
+            sudo kind load docker-image ${{ secrets.DOCKER_USERNAME }}/wisecow:latest --name kind
 
-      `    # Apply K8s manifests
-           sudo kubectl apply -f k8s/deployment.yaml
-           sudo kubectl apply -f k8s/service.yaml
+            # Apply Kubernetes manifests
+            sudo kubectl apply -f k8s/deployment.yaml
+            sudo kubectl apply -f k8s/service.yaml
+
