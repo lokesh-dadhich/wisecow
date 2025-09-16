@@ -36,9 +36,19 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # Load latest image into Kind
+            # Clone or pull latest repo on EC2
+            if [ ! -d ~/wisecow ]; then
+              git clone https://github.com/<your-username>/<repo>.git ~/wisecow
+            else
+              cd ~/wisecow
+              git pull
+            fi
+
+            cd ~/wisecow
+
+            # Load Docker image into Kind
             kind load docker-image ${{ secrets.DOCKER_USERNAME }}/wisecow:latest --name kind
 
-            # Apply K8s manifests
-            sudo kubectl apply -f k8s/deployment.yaml
-            sudo kubectl apply -f k8s/service.yaml
+      `    # Apply K8s manifests
+           sudo kubectl apply -f k8s/deployment.yaml
+           sudo kubectl apply -f k8s/service.yaml
